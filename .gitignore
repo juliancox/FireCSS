@@ -1,0 +1,7 @@
+log
+tmp
+db/*.sqlite3
+db/data.yml
+nbproject/*
+*.DS_Store
+*.orig
