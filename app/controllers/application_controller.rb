@@ -7,4 +7,24 @@ class ApplicationController < ActionController::Base
 
   # Scrub sensitive parameters from your log
   # filter_parameter_logging :password
+
+  def render_json(json, options={})
+    if (json.is_a? Hash)
+      json = render_to_string(json)
+    end
+    callback, variable = params[:callback], params[:variable]
+    response = begin
+      if callback && variable
+        "var #{variable} = #{json};\n#{callback}(#{variable});"
+      elsif variable
+        "var #{variable} = #{json};"
+      elsif callback
+        "#{callback}(#{json});"
+      else
+        json
+      end
+    end
+    render({:content_type => 'application/json', :text => response}.merge(options))
+  end
+
 end

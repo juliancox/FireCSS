@@ -1,0 +1,2 @@
+content firecss chrome/content/firecss/ xpcnativewrappers=no
+overlay chrome://firebug/content/firebugOverlay.xul chrome://firecss/content/firecss.xul
