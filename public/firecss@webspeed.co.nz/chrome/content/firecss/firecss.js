@@ -1,7 +1,7 @@
 FBL.ns(function() {
     with (FBL) {
 
-        const HOST = 'http://localhost:3000'; //need to make this a option in firebug
+        const HOST = 'http://192.168.123.51:3000'; //need to make this a option in firebug
         const PATH = 'firecss';
         const VERSION = 0.0
 
@@ -10,6 +10,7 @@ FBL.ns(function() {
         var FireCSSQueue = [];
         var FireCSSTimeout = null;
         var ModCounter = 0;
+        var pageLocation = null;
 
         var scriptCode = function(url) {
             var result = "\
@@ -113,9 +114,13 @@ FBL.ns(function() {
                     var value = target.innerHTML;
                     var name = target.parentNode.getElementsByClassName('cssPropName')[0].innerHTML;
                     var selector = target.parentNode.parentNode.parentNode.parentNode.getElementsByClassName('cssSelector')[0].innerHTML;
+                    var source = pageLocation;
+                    var line = 0;
                     var link = target.parentNode.parentNode.parentNode.parentNode.parentNode.getElementsByClassName('objectLink')[0].repObject;
-                    var source = link.href;
-                    var line = link.line;
+                    if (link) {
+                        source = link.href;
+                        line = link.line;
+                    }
                     if (selector == 'element.style') {
                         var htmlPanel = FireCSSContext.getPanel("html",true);
                         var path = getPath(htmlPanel.selection).join(' > ');
@@ -148,7 +153,7 @@ FBL.ns(function() {
 				Firebug.Console.log(i+': '+editor[i])
 		}
 		Firebug.Console.log("**** END EDITOR ****");
-		*/
+                     */
                 // Firebug.Console.log("**** TARGET ****");
                 // for (i in target) {
                 //     Firebug.Console.log(i+': '+target[i]);
@@ -177,7 +182,7 @@ FBL.ns(function() {
                     Firebug.Console.log("**** OWNERDOC ****");
                     Firebug.Console.log(target.ownerDocument.parentNode.innerHTML);
                     Firebug.Console.log("**** END OWNERDOC ****");
-                    */
+                     */
                 // loadScript("http://localhost:3000/javascripts/test.js");
                 /*
    		 		Firebug.Console.log("**** VALUE ****");
@@ -190,7 +195,7 @@ FBL.ns(function() {
 				Firebug.Console.log(i+': '+oldValue[i])
 		}
 		Firebug.Console.log("**** END OLDVALUE ****");
-		*/
+                     */
                 }
             }
         }
@@ -211,6 +216,7 @@ FBL.ns(function() {
                 var code = "window._FireCSSExtension = true";
                 Firebug.CommandLine.evaluateInWebPage(code,FireCSSContext);
                 ModCounter = 0;
+                pageLocation = context.window.wrappedJSObject.location.href.split('?')[0];
             },
 
             loadedContext: function(context) {

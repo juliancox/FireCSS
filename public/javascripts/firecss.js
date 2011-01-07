@@ -1,6 +1,6 @@
 (function() {
 
-    const PATH = '/firecss/polling';
+    var PATH = '/firecss/polling';
 
     if (window._FireCSSExtension) { // (window.console && window.console.firebug) {
         window._isFireCSSPage = true; //enable the FireCSS firebug extension
@@ -58,19 +58,23 @@
                 for (var i = 0; i < data.length; i++) {
                     var css = data[i];
                     var rule = css.selector+' {'+css.property+': '+css.value+'}\n';
-                    insertionPoints[css.source].innerHTML = insertionPoints[css.source].innerHTML + rule;
+                    try {
+                        insertionPoints[css.source].innerHTML = insertionPoints[css.source].innerHTML + rule;
+                    } catch(exc) {
+                        insertionPoints[css.source].styleSheet.addRule(css.selector, css.property+': '+css.value);
+                    }
                     if (css.edit > lastEdit) {
                         lastEdit = css.edit;
                     }
-                    console.log(rule+' '+lastEdit);
                 }
             }
         }
 
-        var pusherChannel = window.location.host + window.location.pathname.split('?')[0].replace('/','_');
-        var pusher = new Pusher('03cb0652f55212acc073',pusherChannel);
-        if (false && pusher.connection) {
-            pusher.bind('FireCSS', processUpdate);
+        if (false) {
+        // var pusherChannel = window.location.host + window.location.pathname.split('?')[0].replace('/','_');
+        //var pusher = new Pusher('03cb0652f55212acc073',pusherChannel);
+        // if (pusher.connection) {
+        //    pusher.bind('FireCSS', processUpdate);
         } else {
             var location = mySrc();
             var host = location.split('://')[1].split('/')[0];
@@ -83,7 +87,7 @@
                 pollScript = document.createElement('script');
                 pollScript.src = pollingUrl + '?callback=processUpdate&edit=' + lastEdit + '&timestamp=' + new Date().getTime();
                 document.getElementsByTagName('head')[0].appendChild(pollScript);
-           }, 5000);
+            }, 5000);
         }
     }
 
