@@ -1,9 +1,10 @@
 (function() {
 
     var PATH = '/firecss/polling';
+    window._isFireCSSPage = true; //enable the FireCSS firebug extension
 
-    if (window._FireCSSExtension) { // (window.console && window.console.firebug) {
-        window._isFireCSSPage = true; //enable the FireCSS firebug extension
+    if (false) { // (window._FireCSSExtension) { // (window.console && window.console.firebug) {
+        // window._isFireCSSPage = true; //enable the FireCSS firebug extension
         console.log('firecss server');
     } else {
         //this is one of the other clients of register for push updates and act on them
@@ -58,7 +59,8 @@
                 for (var i = 0; i < data.length; i++) {
                     var css = data[i];
                     var rule = css.selector+' {'+css.property+': '+css.value+'}\n';
-                    try {
+       
+                     try {
                         insertionPoints[css.source].innerHTML = insertionPoints[css.source].innerHTML + rule;
                     } catch(exc) {
                         insertionPoints[css.source].styleSheet.addRule(css.selector, css.property+': '+css.value);
@@ -87,7 +89,7 @@
                 pollScript = document.createElement('script');
                 pollScript.src = pollingUrl + '?callback=processUpdate&edit=' + lastEdit + '&timestamp=' + new Date().getTime();
                 document.getElementsByTagName('head')[0].appendChild(pollScript);
-            }, 5000);
+            }, 1000);
         }
     }
 

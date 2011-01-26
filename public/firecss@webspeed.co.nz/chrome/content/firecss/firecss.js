@@ -1,7 +1,7 @@
 FBL.ns(function() {
     with (FBL) {
 
-        const HOST = 'http://192.168.123.51:3000'; //need to make this a option in firebug
+        const HOST = 'http://192.168.0.3:3000'; //need to make this a option in firebug
         const PATH = 'firecss';
         const VERSION = 0.0
 
@@ -57,9 +57,9 @@ FBL.ns(function() {
                 edit: ModCounter
             }
             ModCounter = ModCounter + 1;
-            Firebug.Console.log('FireCSS! '+ selector + ' {'+name+': '+value+'}');
+            Firebug.Console.log('FireCSS! '+ selector + ' {'+name+': '+value+'} ' + source);
             FireCSSQueue.push(cssObject);
-            FireCSSTimeout = setTimeout(fireCSSToServer,2000);
+            FireCSSTimeout = setTimeout(fireCSSToServer,1000);
         }
 
         var getPath = function(node, path) {
@@ -117,9 +117,9 @@ FBL.ns(function() {
                     var source = pageLocation;
                     var line = 0;
                     var link = target.parentNode.parentNode.parentNode.parentNode.parentNode.getElementsByClassName('objectLink')[0].repObject;
-                    if (link) {
+                    if (link && link.href) {
                         source = link.href;
-                        line = link.line;
+                        line = link.line || 0;
                     }
                     if (selector == 'element.style') {
                         var htmlPanel = FireCSSContext.getPanel("html",true);
