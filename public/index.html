@@ -6,14 +6,26 @@
         <title>FireCSS</title>
 
         <link rel="stylesheet" type="text/css" href="http://192.168.0.3:3000/stylesheets/style.css" />
+<script type="text/javascript">
 
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-21004333-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
     </head>
     <body>
         <div id="content">
             <div id="logo">
                 <h1>FireCSS</h1>
             </div>
-             <div id="byline">
+            <div id="byline">
                 <p>
                     See CSS changes in <em>all</em> browsers as you edit
                 </p>
@@ -21,13 +33,31 @@
             <div class="spacer"></div>
             <div id="description">
                 <p>
-FireCSS is an add-on for Firebug.
-You edit CSS in Firebug.
-FireCSS sends the changes to any browser open on that page.
-When you’re done you can download the modified CSS files.
+                    FireCSS is an add-on for Firebug.
+                    You edit CSS in Firebug.
+                    FireCSS sends the changes to any browser open on that page.
+                    When you’re done you can download the modified CSS files.
                 </p>
             </div>
         </div>
-        <script src="http://192.168.0.3:3000/javascripts/firecss.js" type="text/javascript"></script>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+            /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+            var disqus_shortname = 'firecss'; // required: replace example with your forum shortname
+
+            // The following are highly recommended additional parameters. Remove the slashes in front to use.
+            var disqus_identifier = 'FireCSS';
+            var disqus_url = 'http://firecss.com';
+
+            /* * * DON'T EDIT BELOW THIS LINE * * */
+            (function() {
+                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
     </body>
 </html>
