@@ -41,4 +41,11 @@ class FirecssController < ApplicationController
     render_json(updates.to_json)
   end
 
+  def signup
+    fb = Fanboy.add(params[:email]);
+    if request.xhr?
+      render :partial => 'firecss/thanks_fanboy'
+     end
+  end
+
 end
