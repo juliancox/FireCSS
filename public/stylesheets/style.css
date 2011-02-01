@@ -1,24 +1,94 @@
+html {
+    font: 13px "Lucida Grande","Lucida Sans Unicode","Lucida Sans",Verdana,sans-serif;
+    background-color: #EFEFEF;
+
+}
+
 body {
 }
 
-#content {
-    width: 400px;
-    background-color: white;
-    margin: auto;
+P {
+    margin-bottom: 2em;
+    color: #666666;
+    line-height: 1.3em
 }
 
-#logo h1 {
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: normal;
-    margin-top: 0px;
- }
+#content {
+    width: 830px;
+    margin:  2em auto;
+    border: 1px solid #333333;
+    border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px;
+    background-color: white;
+    padding: 2em;
+}
 
-p {
-    font-family: 'trebuchet ms';
+h2 {
+    font-size: 1.3em;
+    font-weight: bold;
+   line-height: 1.8em;
+   margin-top: 2em;
 }
 
 em {
-    font-style: normal;
     font-weight: bold;
-    text-transform: uppercase;
+    color: #333333;
+}
+
+.title {
+    font-size: 2.5em;
+    font-weight: bold;
+}
+
+.tagline {
+    font-size: 0.8em;
+}
+
+#index .video {
+    float: right;
+    -moz-box-shadow: 6px 6px 8px #333;
+    -webkit-box-shadow: 6px 6px 8px #333;
+    box-shadow: 6px 6px 8px #333;
+    /* For IE 8 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=6, Direction=135, Color='#333333')";
+    /* For IE 5.5 - 7 */
+    filter: progid:DXImageTransform.Microsoft.Shadow(Strength=6, Direction=135, Color='#333333');
+}
+
+#index .description {
+    margin-top: 2em;
+        width: 250px;
+}
+
+#index .details {
+    margin-top: 3em;
+}
+
+.sign-up {
+    text-align: center;
+    background-color:  #FFFFAA;
+    border: 1px solid #CCCCCC;
+    padding: 1.2em;
+    padding-bottom: 0.6em;
+    margin-left: -2em;
+    margin-right: -2em;
+    margin-top: 3em;
+    font-weight: bold;
+    font-size: 1.3em
+}
+
+.sign-up .text-input {
+    font-size: 0.75em;
+    font-weight: normal;
+}
+
+
+.clear {
+    clear: both;
+}
+
+.no-spam {
+    font-weight: normal;
+    font-size: 0.7em;
+    margin-top: 5px;
+    color: #666666;
 }
