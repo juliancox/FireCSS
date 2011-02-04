@@ -92,3 +92,11 @@ em {
     margin-top: 5px;
     color: #666666;
 }
+
+#disqus_thread {
+    width: 500px;
+}
+
+#dsq-content .dsq-comment {
+    clear: none !important;
+}

@@ -1,0 +1,15 @@
+{
+  "name": "FireCSS",
+  "version": "1",
+  "icons": {"128": "128.png" },
+  "app": {
+    "urls": [
+      "http://firecss.com/"
+    ],
+    "launch": {
+      "web_url": "http://firecss.com/",
+      "container": "panel"
+    }
+  },
+  "permissions": ["geolocation"]
+}

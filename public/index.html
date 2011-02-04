@@ -77,9 +77,9 @@
             </div>
             <div class="sign-up" id="sign-up">
                 <form method="post" action="/firecss/signup" id="sign-up-form">
-                Interested? <input id="email" name="email" class="text-input" type="text" size="80" value="Enter your email address to receive updates and get added to the beta list" style="width: 480px; color: #999999;" onfocus="if (this.value == 'Enter your email address to receive updates and get added to the beta list') {this.value = '';this.style.color = '#000'}"/>
-                <input type="submit" value="Sign Up" id="sign-up-button"/><img id="sign-up-busy" src="/images/busy.gif" border="0" style="display: none;"/><br/>
-                <div class="no-spam">No spam!  I hate people spamming me.  I won't spam you.</div>
+                    Interested? <input id="email" name="email" class="text-input" type="text" size="80" value="Enter your email address to receive updates and get added to the beta list" style="width: 480px; color: #999999;" onfocus="if (this.value == 'Enter your email address to receive updates and get added to the beta list') {this.value = '';this.style.color = '#000'}"/>
+                    <input type="submit" value="Sign Up" id="sign-up-button"/><img id="sign-up-busy" src="/images/busy.gif" border="0" style="display: none;"/><br/>
+                    <div class="no-spam">No spam!  I hate people spamming me.  I won't spam you.</div>
                 </form>
             </div>
             <div class="details">
@@ -178,6 +178,42 @@
                 </div>
                 <h2>Comments</h2>
             </div>
+            <div style="float: right;">
+                <script src="http://widgets.twimg.com/j/2/widget.js"></script>
+                <script>
+                    new TWTR.Widget({
+                        version: 2,
+                        type: 'search',
+                        search: 'firecss',
+                        interval: 6000,
+                        title: 'And over at twitter...',
+                        subject: 'Tweets about FireCSS',
+                        width: 250,
+                        height: 2000,
+                        theme: {
+                            shell: {
+                                background: '#8ec1da',
+                                color: '#ffffff'
+                            },
+                            tweets: {
+                                background: '#ffffff',
+                                color: '#444444',
+                                links: '#1985b5'
+                            }
+                        },
+                        features: {
+                            scrollbar: true,
+                            loop: true,
+                            live: true,
+                            hashtags: true,
+                            timestamp: true,
+                            avatars: true,
+                            toptweets: true,
+                            behavior: 'default'
+                        }
+                    }).render().start();
+                </script>
+            </div>
             <div class="spacer"><a name="comments">&nbsp;</a></div>
             <div id="disqus_thread"></div>
             <script type="text/javascript">
@@ -197,9 +233,10 @@
             </script>
             <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
             <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
-        </div>
+               <div class="clear"></div>
+      </div>
         <div id="footer">
 
         </div>
-    </body>
+   </body>
 </html>
