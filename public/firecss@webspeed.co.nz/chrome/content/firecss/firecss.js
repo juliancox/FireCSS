@@ -163,7 +163,11 @@ FBL.ns(function() {
                 Firebug.Editor.removeListener(this.netListener);
             },
 
-            buttonFireCSSSave: function() {
+             buttonFireCSSReset: function() {
+                alert('Reset here')
+            },
+
+           buttonFireCSSSave: function() {
                 alert('Should be saving here')
             }
         });

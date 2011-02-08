@@ -1,9 +1,12 @@
 <?xml version="1.0"?>
 
+<?xml-stylesheet href="chrome://firecss/content/firecss.css"?>
+
 <overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <script src="chrome://firecss/content/firecss.js" type="application/x-javascript"/>
     <commandset id="mainCommandSet">
-        <command id="cmd_FireCSSSave" oncommand="Firebug.FireCSS.buttonFireCSSSave(FirebugContext)"/>
+         <command id="cmd_FireCSSReset" oncommand="Firebug.FireCSS.buttonFireCSSReset(FirebugContext)"/>
+       <command id="cmd_FireCSSSave" oncommand="Firebug.FireCSS.buttonFireCSSSave(FirebugContext)"/>
     </commandset>
 
     <panelBar id="fbPanelBar1" class="panelBar" flex="3" persist="width,height">
@@ -11,7 +14,16 @@
             <hbox id="fbPanelBar1-innerToolbar" class="innerToolbar" role="toolbar" aria-label="a11y.labels.firebug_tools">
                 <hbox id="fbPanelBar1-buttons">
 
-                    <toolbarbutton id="fbFireCSSSave" label="Save CSS" class="toolbar-text-button" tooltiptext="Save edits back to server" command="cmd_FireCSSSave"/>
+                        <toolbarseparator id="fbFireCSSSeparator"/>
+
+
+                           <toolbarbutton id="fbFireCSSReset" tooltiptext="FireCSS: reload original page from server"
+                                    command="cmd_FireCSSReset" collapsed="false">
+                            </toolbarbutton>
+
+                            <toolbarbutton id="fbFireCSSSave" tooltiptext="FireCSS: Save edits back to server"
+                                    command="cmd_FireCSSSave" collapsed="false">
+                            </toolbarbutton>
 
                 </hbox>
              </hbox>
