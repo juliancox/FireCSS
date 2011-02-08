@@ -56,11 +56,14 @@ em {
 
 #index .description {
     margin-top: 2em;
-        width: 250px;
+        width: 235px;
+        text-align: justify;
 }
 
 #index .details {
     margin-top: 3em;
+    width: 500px;
+    text-align: justify;
 }
 
 .sign-up {
@@ -99,4 +102,52 @@ em {
 
 #dsq-content .dsq-comment {
     clear: none !important;
+}
+
+#sponsors {
+    float: right;
+    font-family: "lucida grande",lucida,tahoma,helvetica,arial,sans-serif;
+    font-size: 12px;
+    margin: 3em;
+    margin-right: 0;
+}
+
+.sponsors {
+    background-color: #8EC1DA;
+     border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px;
+     text-align: center;
+}
+
+.sponsors h4 {
+    font-size: 16px;
+    line-height: 1.2;
+}
+
+.sponsors h3 {
+    font-size: 11px;
+    line-height: 1.2;
+}
+
+.sponsors-hd {
+        padding: 10px;
+        text-align: left;
+        color: white;
+}
+
+.sponsors-bd {
+    background-color: #ffffff;
+    border-radius: 6px; -moz-border-radius: 6px; -webkit-border-radius: 6px;
+    border-left: 1px solid #8EC1DA;
+    border-right: 1px solid #8EC1DA;
+    padding: 15px;
+}
+
+.sponsors-ft {
+    padding: 10px;
+    color: white;
+ }
+
+ .sponsor-notes {
+     text-align: left;
+     margin-top: 5px;
 }

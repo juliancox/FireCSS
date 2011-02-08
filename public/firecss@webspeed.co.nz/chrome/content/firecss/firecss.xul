@@ -2,4 +2,19 @@
 
 <overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <script src="chrome://firecss/content/firecss.js" type="application/x-javascript"/>
+    <commandset id="mainCommandSet">
+        <command id="cmd_FireCSSSave" oncommand="Firebug.FireCSS.buttonFireCSSSave(FirebugContext)"/>
+    </commandset>
+
+    <panelBar id="fbPanelBar1" class="panelBar" flex="3" persist="width,height">
+        <hbox id="fbPanelBar1-tabBox" class="panelTabBox">
+            <hbox id="fbPanelBar1-innerToolbar" class="innerToolbar" role="toolbar" aria-label="a11y.labels.firebug_tools">
+                <hbox id="fbPanelBar1-buttons">
+
+                    <toolbarbutton id="fbFireCSSSave" label="Save CSS" class="toolbar-text-button" tooltiptext="Save edits back to server" command="cmd_FireCSSSave"/>
+
+                </hbox>
+             </hbox>
+        </hbox>
+    </panelBar>
 </overlay>

@@ -127,80 +127,12 @@ FBL.ns(function() {
                         selector = path;
                     }
                     addCSSToQueue(selector, name, value, source, line);
-                /*
-                    var htmlPanel = FireCSSContext.getPanel("html",true);
-                    var item = htmlPanel.treeWalker
-                    Firebug.Console.log("**** PANEL ****");
-                    for (i in item) {
-                        Firebug.Console.log(i+': '+item[i]);
-                    }
-                    Firebug.Console.log("**** END {ANEL ****");
-                    item = htmlPanel.selection
-                    Firebug.Console.log("**** PANEL ****");
-                    for (i in item) {
-                        Firebug.Console.log(i+': '+item[i]);
-                    }
-                    Firebug.Console.log("**** END {ANEL ****");
-                    var arr = getPath(htmlPanel.selection);
-                    Firebug.Console.log(arr.join(' > '));
- 		Firebug.Console.log("**** PANEL ****");
-		for (i in panel) {
-				Firebug.Console.log(i+': '+panel[i])
-		}
-		Firebug.Console.log("**** END PANEL ****");
-		Firebug.Console.log("**** EDITOR ****");
-		for (i in editor) {
-				Firebug.Console.log(i+': '+editor[i])
-		}
-		Firebug.Console.log("**** END EDITOR ****");
-                     */
-                // Firebug.Console.log("**** TARGET ****");
-                // for (i in target) {
-                //     Firebug.Console.log(i+': '+target[i]);
-                // }
-                // Firebug.Console.log("**** END TARGET ****");
-                /*
-                    Firebug.Console.log(target.className);
-                    Firebug.Console.log("**** TARGET ****");
-                    Firebug.Console.log(target.innerHTML);
-                    Firebug.Console.log("**** END TARGET ****");
-                    Firebug.Console.log("**** PARENT ****");
-                    Firebug.Console.log(target.parentNode.innerHTML);
-                    Firebug.Console.log("**** END PARENT ****");
-                    Firebug.Console.log("**** GRANDPARENT ****");
-                    Firebug.Console.log(target.parentNode.parentNode.innerHTML);
-                    Firebug.Console.log("**** END GRANFPARENT ****");
-                    Firebug.Console.log("**** GREATGRANDPARENT ****");
-                    Firebug.Console.log(target.parentNode.parentNode.parentNode.innerHTML);
-                    Firebug.Console.log("**** END GREATGRANFPARENT ****");
-                    Firebug.Console.log("**** GERATGREATGRANDPARENT ****");
-                    Firebug.Console.log(target.parentNode.parentNode.parentNode.parentNode.innerHTML);
-                    Firebug.Console.log("**** END GREATGREATGRANFPARENT ****");
-                    Firebug.Console.log("**** GREATGERATGREATGRANDPARENT ****");
-                    Firebug.Console.log(target.parentNode.parentNode.parentNode.parentNode.parentNode.innerHTML);
-                    Firebug.Console.log("**** END GREATGREATGREATGRANFPARENT ****");
-                    Firebug.Console.log("**** OWNERDOC ****");
-                    Firebug.Console.log(target.ownerDocument.parentNode.innerHTML);
-                    Firebug.Console.log("**** END OWNERDOC ****");
-                     */
-                // loadScript("http://localhost:3000/javascripts/test.js");
-                /*
-   		 		Firebug.Console.log("**** VALUE ****");
-		for (i in value) {
-				Firebug.Console.log(i+': '+value[i])
-		}
-		Firebug.Console.log("**** END VALUE ****");
-		Firebug.Console.log("**** OLDVALUE ****");
-		for (i in oldValue) {
-				Firebug.Console.log(i+': '+oldValue[i])
-		}
-		Firebug.Console.log("**** END OLDVALUE ****");
-                     */
+
                 }
             }
         }
 
-        Firebug.CSSEchoModule = extend(Firebug.Module,
+        Firebug.FireCSS = extend(Firebug.Module,
         {
             initialize: function(owner)
             {
@@ -221,7 +153,7 @@ FBL.ns(function() {
 
             loadedContext: function(context) {
                 isFireCSSPage = (context.window.wrappedJSObject._isFireCSSPage == true);
-            },
+           },
 
             shutdown: function()
             {
@@ -229,6 +161,10 @@ FBL.ns(function() {
 
                 // Unregister NetMonitor listener
                 Firebug.Editor.removeListener(this.netListener);
+            },
+
+            buttonFireCSSSave: function() {
+                alert('Should be saving here')
             }
         });
 
