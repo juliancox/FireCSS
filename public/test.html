@@ -6,15 +6,16 @@
         <title>FireCSS</title>
 
         <link rel="stylesheet" type="text/css" href="http://192.168.0.3:3000/stylesheets/style.css" />
+    <link rel="stylesheet" type="text/css" href="http://192.168.0.3:3000/stylesheets/other.css" />
+
+        <style>
+            html {
+                background-image: url(/images/trans.gif);
+            }
+
+        </style>
 
     </head>
-
-    <style>
-        html {
-            background-image: url(/images/trans.gif);
-        }
-
-    </style>
 
     <body>
         <div id="content">
@@ -34,6 +35,13 @@
                     FireCSS sends the changes to any browser open on that page.
                     When you’re done you can download the modified CSS files.
                 </p>
+            </div>
+            <div id ="manual-polling">
+                <input id="manual-poll" type="button" value="Poll Now" onclick="poll()">
+            </div>
+            <div>
+                <a href="/file.pdf">PDF</a><br>
+                    <a href="#" onclick="window.open('/file.pdf');return false;">Test</a>
             </div>
         </div>
         <script src="http://192.168.0.3:3000/javascripts/firecss.js" type="text/javascript"></script>

@@ -8,6 +8,10 @@
         console.log('firecss server');
     } else {
         //this is one of the other clients of register for push updates and act on them
+
+        var isArray = function(input) {
+            return (Object.prototype.toString.apply(input) === '[object Array]');
+        }
         
         var insertAfter = function(newElement,targetElement) {
             var parent = targetElement.parentNode;
@@ -56,18 +60,26 @@
 
         processUpdate = function(data) {
             if (data) {
-                for (var i = 0; i < data.length; i++) {
-                    var css = data[i];
-                    var rule = css.selector+' {'+css.property+': '+css.value+'}\n';
-       
-                     try {
-                        insertionPoints[css.source].innerHTML = insertionPoints[css.source].innerHTML + rule;
-                    } catch(exc) {
-                        insertionPoints[css.source].styleSheet.addRule(css.selector, css.property+': '+css.value);
+                if (isArray(data)) { // its an array of updates so process as such
+                    for (var i = 0; i < data.length; i++) {
+                        var css = data[i];
+                        if (css.selector) { //server can send down null values just to update last edit
+                            var rule = css.selector+' {'+css.property+': '+css.value+'}\n';
+                            console.log(css.source);
+                            try {
+                                insertionPoints[css.source].innerHTML = insertionPoints[css.source].innerHTML + rule;
+                            } catch(exc) {
+                                insertionPoints[css.source].styleSheet.addRule(css.selector, css.property+': '+css.value);
+                            }
+                        } else {
+                        // alert('Nil selector')
+                        }
+                        if (css.edit > lastEdit) {
+                            lastEdit = css.edit;
+                        }
                     }
-                    if (css.edit > lastEdit) {
-                        lastEdit = css.edit;
-                    }
+                } else if (data == 'reload') {
+                    window.location.reload();
                 }
             }
         }
@@ -84,12 +96,13 @@
             var pollScript = document.createElement('script');
             pollScript.src = pollingUrl
             document.getElementsByTagName('head')[0].appendChild(pollScript);
-            setInterval(function() {
-                pollScript.parentNode.removeChild(pollScript);
+            poll = function() {
+               pollScript.parentNode.removeChild(pollScript);
                 pollScript = document.createElement('script');
                 pollScript.src = pollingUrl + '?callback=processUpdate&edit=' + lastEdit + '&timestamp=' + new Date().getTime();
                 document.getElementsByTagName('head')[0].appendChild(pollScript);
-            }, 1000);
+            }
+       // setInterval(poll, 1000);
         }
     }
 

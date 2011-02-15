@@ -1,0 +1,20 @@
+/* 
+    Document   : other
+    Created on : Feb 15, 2011, 9:45:31 PM
+    Author     : julian
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+/* 
+   TODO customize this sample style
+   Syntax recommendation http://www.w3.org/TR/REC-CSS2/
+*/
+
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline; border: 1px solid red;
+}

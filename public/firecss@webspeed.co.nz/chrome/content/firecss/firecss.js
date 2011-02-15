@@ -11,6 +11,7 @@ FBL.ns(function() {
         var FireCSSTimeout = null;
         var ModCounter = 0;
         var pageLocation = null;
+        var dirty = false;
 
         var scriptCode = function(url) {
             var result = "\
@@ -42,6 +43,7 @@ FBL.ns(function() {
                 FireCSSQueue = [];
                 var url = HOST + '/' + PATH + '?v=' + VERSION + args;
                 loadScript(url);
+                dirty = true;
             }
         }
 
@@ -153,7 +155,7 @@ FBL.ns(function() {
 
             loadedContext: function(context) {
                 isFireCSSPage = (context.window.wrappedJSObject._isFireCSSPage == true);
-           },
+            },
 
             shutdown: function()
             {
@@ -163,16 +165,21 @@ FBL.ns(function() {
                 Firebug.Editor.removeListener(this.netListener);
             },
 
-             buttonFireCSSReset: function() {
-                alert('Reset here')
+            buttonFireCSSReset: function() {
+                var doreset = ((!dirty) || (confirm('You have unsaved edits - are you sure you want to reset this page?')));
+                if (doreset) {
+                    args = "&edits[]=-1";
+                    var url = HOST + '/' + PATH + '?v=' + VERSION + args;
+                    loadScript(url);
+                }
             },
 
-           buttonFireCSSSave: function() {
-                alert('Should be saving here')
+            buttonFireCSSSave: function() {
+                open('http://192.168.0.3:3000/firecss/download?referer='+escape(FireCSSContext.window.wrappedJSObject.location)); //point to origin of firecss.js and add timestamp and set dirty to false
             }
         });
 
-        Firebug.registerModule(Firebug.CSSEchoModule);
+        Firebug.registerModule(Firebug.FireCSS);
 
         }
 });
