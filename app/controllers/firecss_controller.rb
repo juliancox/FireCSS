@@ -40,12 +40,13 @@ class FirecssController < ApplicationController
         mods = []
         puts "reset"
       else
-        mods << {:selector => params[:selectors][i], :property => params[:properties][i], :value => params[:values][i], :source => params[:sources][i], :line => params[:lines][i].to_i, :timestamp  => params[:timestamps][i].to_i, :edit  => number_mods + i, :client => @client}
+        mods << {:selector => params[:selectors][i], :property => params[:properties][i], :value => params[:values][i], :source => params[:sources][i], :line => params[:lines][i].to_f, :timestamp  => params[:timestamps][i].to_i, :edit  => number_mods + i, :client => @client}
         puts "#{params[:selectors][i]} {#{params[:properties][i]}: #{params[:values][i]}}"
       end
     end
     Pusher[pusher_channel].trigger('FireCSS', mods)
     Rails.cache.write(pusher_channel, mods)
+    puts y mods
     render :text => '' #nothing needs to be returned
   end
 
@@ -70,6 +71,7 @@ class FirecssController < ApplicationController
       if updates.length > 0
         dummy = '1'
       end
+      puts y updates
       render_json(updates.to_json)
     end
   end
@@ -128,10 +130,15 @@ class FirecssController < ApplicationController
 
   def apply_changes text, mods  #apply an array of css changes to the incoming text file
     # sort mods by line number, selector, and mod number
+    # now we also have new rule edits which add a fraction to the line number
+    # add these edits in so they don't affect the current line numbering (ie at the end of an existing edit)
+    # since they're in order we can add to end of existing rule even if it has a new rule added
+    # to find the end of an existing rule we need the first unquoted } or } unwrapped by ()
     lines = text.split("\n") #StringIO.new(text).readlines
     mods.sort!{|a,b| a[:line] != b[:line] ? a[:line] <=> b[:line] : (a[:property] != b[:property] ? a[:property] <=> b[:property] : a[:edit] <=> b[:edit])}
     no_line_mods = mods.take_while!{|m| m[:line] == 0}  # mods now has only ones with line numbers
     mods.each_with_index do |m, i|
+      puts m[:line]
       if (i == (mods.length-1)) || ((m[:line] != mods[i+1][:line]) || (m[:selector] != mods[i+1][:selector]) || (m[:property] != mods[i+1][:property]))
         #this line in not superceeded by the next one so apply it.
         regx = Regexp.new(m[:property]+'\s?:\s?[^};$]+',true)
@@ -139,13 +146,13 @@ class FirecssController < ApplicationController
         lines[lineNo..lines.length].each_with_index do |line, i|
           result = line.sub!(regx,"#{m[:property]}: #{m[:value]}")
           break if result;
-          if line =~ /}/  #we found the closing bracket but haven't been able to replace so insert prior to bracket #TODO handle close brackets in quotes
+          if line =~ /\}/  #we found the closing bracket but haven't been able to replace so insert prior to bracket #TODO handle close brackets in quotes or brackets
             prev = i+lineNo-1
             if (prev > 0) 
               lines[prev] += ';' if (!(lines[prev] =~ /\{.?\z/) && !(lines[prev] =~ /;.?\z/))
               whitespace = /\A\s+/.match(lines[prev])
             end
-            line.sub!(/}/,"#{(whitespace ? whitespace[0] : '')}#{m[:property]}: #{m[:value]};\n}")
+            line.sub!(/\}/,"#{(whitespace ? whitespace[0] : '')}#{m[:property]}: #{m[:value]};\n}")
             break;
           end
         end
@@ -161,6 +168,7 @@ class FirecssController < ApplicationController
     #
     # changes without a line number may include previous and post rules?? but in the meantime add rules to bottom of the file
     # or if its html before last style before </head>  if no </style> and <style></style> before head
+    # Yup confirmed this is not working even though html file is being saved.
     return lines.join("\n")
   end
 

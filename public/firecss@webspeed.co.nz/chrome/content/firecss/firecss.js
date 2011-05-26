@@ -59,7 +59,7 @@ FBL.ns(function() {
                 edit: ModCounter
             }
             ModCounter = ModCounter + 1;
-            Firebug.Console.log('FireCSS! '+ selector + ' {'+name+': '+value+'} ' + source);
+            Firebug.Console.log('FireCSS! '+ selector + ' {'+name+': '+value+'} ' + source + ' (line: ' + line + ')');
             FireCSSQueue.push(cssObject);
             FireCSSTimeout = setTimeout(fireCSSToServer,1000);
         }
@@ -101,6 +101,66 @@ FBL.ns(function() {
             return path;
         };
 
+        var getAncestorByAttribute = function(element, name, value) {
+            if (!element.parentNode || !element.parentNode.getAttribute) return null;
+            var attr = element.parentNode.getAttribute(name)
+            if (attr && (attr == value || (value.test && value.test(attr)))) return element.parentNode;
+            return getAncestorByAttribute(element.parentNode,name,value);
+        }
+
+        var getAncestorByClassName = function(element, value) {
+            return getAncestorByAttribute(element, 'class', new RegExp('(^|\\s)' + value + '($|\\s)'));
+        }
+
+        var ruleLineNo = function(element) {
+            var lineNo = function(element) {
+                var ruleid = element.getAttribute('ruleid').split('/');
+                if (ruleid[0] == 'new') {
+                    return  element.getAttribute('fcslineno');
+                } else {
+                    return ruleid[ruleid.length - 1];
+                }
+            }
+            var prevLineNo = function(element) {
+                if (!element.previousSibling) {
+                    return 0
+                } else {
+                    var line = lineNo(element.previousSibling);
+                    if (line) {
+                        return line
+                    } else {
+                        return prevLineNo(element.previousSibling)
+                    }
+                }
+            }
+            var nextLineNo = function(element) {
+                if (!element.nextSibling) {
+                    return 9999999; // shouldn't be that number of lines in a single css file
+                } else {
+                    var line = lineNo(element.nextSibling);
+                    if (line) {
+                        return line
+                    } else {
+                        return nextLineNo(element.nextSibling)
+                    }
+                }
+            }
+            element = new RegExp('(^|\\s)cssRule($|\\s)').test(element.getAttribute('class')) ? element : getAncestorByClassName(element,'cssRule');
+            var line = lineNo(element);
+            if (line) {
+                return line
+            } else {
+                var prev = parseFloat(prevLineNo(element));
+                var postPrev = parseInt(prev) + 1
+                var next = parseFloat(nextLineNo(element));
+                if (next > postPrev) {
+                    next = postPrev;
+                }
+                line = prev + ((next - prev)/2);
+                element.setAttribute('fcslineno',line);
+                return line;
+            }
+        }
 
         function CSSListener()
         {
@@ -110,26 +170,39 @@ FBL.ns(function() {
         {
             onBeginEdit: function(panel, editor, target, value) {},
             onSaveEdit: function(panel, editor, target, value, oldValue) {
-                if ((isFireCSSPage) && (target.className.indexOf('cssPropValue') >= 0)) {
-                    // FireCSS is enabled for this page and a CSSValue has changed
-                    // Now extract the value and the other pertinant details
-                    var value = target.innerHTML;
-                    var name = target.parentNode.getElementsByClassName('cssPropName')[0].innerHTML;
-                    var selector = target.parentNode.parentNode.parentNode.parentNode.getElementsByClassName('cssSelector')[0].innerHTML;
-                    var source = pageLocation;
-                    var line = 0;
-                    var link = target.parentNode.parentNode.parentNode.parentNode.parentNode.getElementsByClassName('objectLink')[0].repObject;
-                    if (link && link.href) {
-                        source = link.href;
-                        line = link.line || 0;
+                try {
+                    if ((isFireCSSPage) && (target.className.indexOf('cssPropValue') >= 0)) {
+                        FireCSSContext.window.wrappedJSObject.lastEdit = target;  // so we can explore the target and heirarchy in the firebug console
+                        // FireCSS is enabled for this page and a CSSValue has changed
+                        // Now extract the value and the other pertinant details
+                        var value = target.innerHTML;
+                        var rule = getAncestorByClassName(target,'cssRule');
+                        var name = rule.getElementsByClassName('cssPropName')[0].innerHTML;
+                        var selector = rule.getElementsByClassName('cssSelector')[0].innerHTML;
+                        var ruleid = rule.getAttribute('ruleid').split('/');
+                        var line = ruleLineNo(target)
+                        var source = pageLocation;
+                        if (target.ownerDocument.title == "Firebug Main Panel") {
+                            source = panel.location.href;
+                        } else if (target.ownerDocument.title == "Firebug Side Panel") {
+                            line = 0;
+                            var link = rule.parentNode.getElementsByClassName('objectLink')[0].repObject;
+                            if (link && link.href) {
+                                source = link.href;
+                                line = link.line || 0;
+                            }
+                            if (selector == 'element.style') {
+                                var htmlPanel = FireCSSContext.getPanel("html",true);
+                                var path = getPath(htmlPanel.selection).join(' > ');
+                                selector = path;
+                            }
+                        }
+                        if (selector) {
+                            addCSSToQueue(selector, name, value, source, line);
+                        }
                     }
-                    if (selector == 'element.style') {
-                        var htmlPanel = FireCSSContext.getPanel("html",true);
-                        var path = getPath(htmlPanel.selection).join(' > ');
-                        selector = path;
-                    }
-                    addCSSToQueue(selector, name, value, source, line);
-
+                } catch (e) {
+                    Firebug.Console.log('FireCSS EXCEPTION: '+e.message+'\n'+e.stack)
                 }
             }
         }
@@ -155,6 +228,10 @@ FBL.ns(function() {
 
             loadedContext: function(context) {
                 isFireCSSPage = (context.window.wrappedJSObject._isFireCSSPage == true);
+                FireCSSContext.window.wrappedJSObject.Fb = Firebug; // so we can inspect firebug in the console
+                FireCSSContext.window.wrappedJSObject.Fbc = FirebugContext;
+                Firebug.Console.log('FCS win doc ss: '+FireCSSContext.window.document.styleSheets[0].cssRules.length);
+                Firebug.Console.log('FCS cont doc ss: '+content.document.styleSheets[0].cssRules.length);
             },
 
             shutdown: function()
@@ -175,7 +252,25 @@ FBL.ns(function() {
             },
 
             buttonFireCSSSave: function() {
-                open('http://192.168.0.3:3000/firecss/download?referer='+escape(FireCSSContext.window.wrappedJSObject.location)); //point to origin of firecss.js and add timestamp and set dirty to false
+                // open('http://192.168.0.3:3000/firecss/download?referer='+escape(FireCSSContext.window.wrappedJSObject.location)); //point to origin of firecss.js and add timestamp and set dirty to false
+                /*
+             *
+                 var stylesheets = FireCSSContext.window.document.styleSheets;
+                for (var i = 0; i < stylesheets.length; i++) {
+                    Firebug.Console.log(stylesheets[i].href);
+                    var rules = stylesheets[i].cssRules;
+                    for (var j = 0; j < rules.length; j++) {
+                        Firebug.Console.log(rules[j].cssText);
+                    }
+                }
+                */
+                var form = content.document.createElement("form");
+                form.setAttribute("method", 'post');
+                form.setAttribute("target", '_blank');
+                form.setAttribute("action", 'http://192.168.0.3:3000/firecss/download');
+                content.document.body.appendChild(form);
+                form.submit();
+
             }
         });
 

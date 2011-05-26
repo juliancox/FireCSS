@@ -26,7 +26,7 @@
             var scripts = document.getElementsByTagName('script');
             for (var i = 0; i < scripts.length; i++) {
                 var src = scripts[i].getAttribute('src');
-                if (src.indexOf('/firecss.js') > 0) {
+                if ((src) && (src.indexOf('/firecss.js') > 0)) {
                     return src;
                 }
             }

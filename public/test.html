@@ -6,7 +6,7 @@
         <title>FireCSS</title>
 
         <link rel="stylesheet" type="text/css" href="http://192.168.0.3:3000/stylesheets/style.css" />
-    <link rel="stylesheet" type="text/css" href="http://192.168.0.3:3000/stylesheets/other.css" />
+        <link rel="stylesheet" type="text/css" href="http://192.168.0.3:3000/stylesheets/other.css" />
 
         <style>
             html {
@@ -14,6 +14,27 @@
             }
 
         </style>
+
+        <script type="text/javascript">
+       getAncestorByAttribute = function(element, name, value) {
+            if (!element.parentNode || !element.parentNode.getAttribute) return null;
+            var attr = element.parentNode.getAttribute(name)
+            if (attr && (attr == value || (value.test && value.test(attr)))) return element.parentNode;
+            return getAncestorByAttribute(element.parentNode,name,value);
+        }
+
+        getAncestorByClassName = function(element, value) {
+            return getAncestorByAttribute(element, 'class', new RegExp('(^|\\s)' + value + '($|\\s)'));
+        }
+
+        Array.prototype.last = function() {return this[this.length - 1];}
+
+        document.addEventListener("DOMAttrModified", function() {
+            console.log('attr modified');
+        }, false);
+
+        </script>
+
 
     </head>
 
@@ -29,7 +50,7 @@
             </div>
             <div class="spacer"></div>
             <div id="description">
-                <p>
+                <p class="desc">
                     FireCSS is an add-on for Firebug.
                     You edit CSS in Firebug.
                     FireCSS sends the changes to any browser open on that page.
@@ -37,7 +58,7 @@
                 </p>
             </div>
             <div id ="manual-polling">
-                <input id="manual-poll" type="button" value="Poll Now" onclick="poll()">
+                <input id="manual-poll" type="button" value="Poll Now" onclick="poll()" />
             </div>
             <div>
                 <a href="/file.pdf">PDF</a><br>
