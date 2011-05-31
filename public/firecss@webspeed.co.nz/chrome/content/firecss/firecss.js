@@ -1,9 +1,10 @@
 FBL.ns(function() {
     with (FBL) {
 
-        const HOST = 'http://192.168.0.3:3000'; //need to make this a option in firebug
         const PATH = 'firecss';
         const VERSION = 0.0
+        
+        var host = null;
 
         var isFireCSSPage = null;
         var FireCSSContext = null;
@@ -41,7 +42,7 @@ FBL.ns(function() {
                     args =  args + '&edits[]=' + escape(FireCSSQueue[i].edit);
                 }
                 FireCSSQueue = [];
-                var url = HOST + '/' + PATH + '?v=' + VERSION + args;
+                var url = host + '/' + PATH + '?v=' + VERSION + args;
                 loadScript(url);
                 dirty = true;
             }
@@ -59,7 +60,7 @@ FBL.ns(function() {
                 edit: ModCounter
             }
             ModCounter = ModCounter + 1;
-            Firebug.Console.log('FireCSS! '+ selector + ' {'+name+': '+value+'} ' + source + ' (line: ' + line + ')');
+            // Firebug.Console.log('FireCSS! '+ selector + ' {'+name+': '+value+'} ' + source + ' (line: ' + line + ')');
             FireCSSQueue.push(cssObject);
             FireCSSTimeout = setTimeout(fireCSSToServer,1000);
         }
@@ -228,11 +229,19 @@ FBL.ns(function() {
 
             loadedContext: function(context) {
                 isFireCSSPage = (context.window.wrappedJSObject._isFireCSSPage == true);
-                FireCSSContext.window.wrappedJSObject.Fb = Firebug; // so we can inspect firebug in the console
-                FireCSSContext.window.wrappedJSObject.Fbc = FirebugContext;
-                Firebug.Console.log('FCS win doc ss: '+FireCSSContext.window.document.styleSheets[0].cssRules.length);
-                Firebug.Console.log('FCS cont doc ss: '+content.document.styleSheets[0].cssRules.length);
-            },
+                if (isFireCSSPage) {
+                    // find where the firecss script is coming from so we can post back to that location
+                    var scripts = content.document.getElementsByTagName('script');
+                    for (var i = 0; i < scripts.length; i++) {
+                        var src = scripts[i].getAttribute('src');
+                        if ((src) && (src.indexOf('/firecss.js') > 0)) {
+                            var parts = src.split('://')
+                            host = parts[0] + '://' +parts[1].split('/')[0];
+                            break;
+                        }
+                    }
+                 }
+             },
 
             shutdown: function()
             {
@@ -246,31 +255,75 @@ FBL.ns(function() {
                 var doreset = ((!dirty) || (confirm('You have unsaved edits - are you sure you want to reset this page?')));
                 if (doreset) {
                     args = "&edits[]=-1";
-                    var url = HOST + '/' + PATH + '?v=' + VERSION + args;
+                    var url = host + '/' + PATH + '?v=' + VERSION + args;
                     loadScript(url);
                 }
             },
 
             buttonFireCSSSave: function() {
-                // open('http://192.168.0.3:3000/firecss/download?referer='+escape(FireCSSContext.window.wrappedJSObject.location)); //point to origin of firecss.js and add timestamp and set dirty to false
-                /*
-             *
-                 var stylesheets = FireCSSContext.window.document.styleSheets;
-                for (var i = 0; i < stylesheets.length; i++) {
-                    Firebug.Console.log(stylesheets[i].href);
-                    var rules = stylesheets[i].cssRules;
-                    for (var j = 0; j < rules.length; j++) {
-                        Firebug.Console.log(rules[j].cssText);
-                    }
+               
+                var form = content.document.getElementById('_FireCSSStyleForm');
+                if (form) {
+                    form.parentNode.removeChild(form);
                 }
-                */
-                var form = content.document.createElement("form");
+                form = content.document.createElement("form");
+                form.setAttribute("id", '_FireCSSStyleForm');
                 form.setAttribute("method", 'post');
                 form.setAttribute("target", '_blank');
-                form.setAttribute("action", 'http://192.168.0.3:3000/firecss/download');
+                form.setAttribute("action", host + '/firecss/download');
+                var stylesheets = content.document.styleSheets;
+                
+                 var styleEls = content.document.getElementsByTagName('style');
+                var styleElCount = 0;
+                
+                for (var i = 0; i < stylesheets.length; i++) { 
+                    var rules = stylesheets[i].cssRules;
+                    var css = ''
+                    for (var j = 0; j < rules.length; j++) {
+                        css += rules[j].cssText + "\n"
+                    }
+                    if (stylesheets[i].href) {
+                        // its an external stylesheet we're going to send the contents up  
+                        var sheet = content.document.createElement("input");
+                        sheet.setAttribute("type", 'hidden');
+                        sheet.setAttribute("name", 'stylesheets[]');
+                        sheet.setAttribute("value", stylesheets[i].href);
+                        form.appendChild(sheet);
+                        var details = content.document.createElement("input");
+                        details.setAttribute("type", 'hidden');
+                        details.setAttribute("name", 'rules[]');
+                        details.setAttribute("value", css);
+                        form.appendChild(details);
+                    } else {
+                        // its an internal style tag - we're going to replace in the html and catch in the html content
+                        // first check to see if it’s the firebug stylesheet - in which case remove it.
+                        if ((rules.length > 0) && (rules[0].selectorText == '.firebugCanvas')) {
+                            styleEls[styleElCount].parentNode.removeChild(styleEls[styleElCount]);
+                        } else {
+                            styleEls[styleElCount].innerHTML = css;
+                        }
+                        styleElCount++;
+                    }
+                }
+                
+                var html = content.document.createElement("input");
+                html.setAttribute("type", 'hidden');
+                html.setAttribute("name", 'html');
+                var docContent = '<!DOCTYPE ' + content.document.doctype.name + ' PUBLIC "'+ content.document.doctype.publicId + '" "' + content.document.doctype.systemId + '">\n'
+                docContent += '<html'
+                for (var i=0; i < content.document.documentElement.attributes.length; i++) {
+                    var attr = content.document.documentElement.attributes[i];
+                    docContent+= ' ' + attr.name + '="' + attr.value + '"';
+                }
+                docContent += '>\n'
+                docContent += content.document.documentElement.innerHTML
+                docContent += '\n</html>'
+                html.setAttribute("value",docContent);
+                form.appendChild(html);
+ 
                 content.document.body.appendChild(form);
                 form.submit();
-
+                dirty = false;
             }
         });
 

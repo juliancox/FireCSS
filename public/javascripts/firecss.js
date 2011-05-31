@@ -3,7 +3,7 @@
     var PATH = '/firecss/polling';
     window._isFireCSSPage = true; //enable the FireCSS firebug extension
 
-    if (false) { // (window._FireCSSExtension) { // (window.console && window.console.firebug) {
+    if  (window._FireCSSExtension) { // (window.console && window.console.firebug) {
         // window._isFireCSSPage = true; //enable the FireCSS firebug extension
         console.log('firecss server');
     } else {
@@ -102,7 +102,7 @@
                 pollScript.src = pollingUrl + '?callback=processUpdate&edit=' + lastEdit + '&timestamp=' + new Date().getTime();
                 document.getElementsByTagName('head')[0].appendChild(pollScript);
             }
-       // setInterval(poll, 1000);
+        setInterval(poll, 1000);
         }
     }
 

@@ -28,6 +28,7 @@ class FirecssController < ApplicationController
   end
 
   def index
+    code = ''
     puts("Index Session ID: #{@client}")
     source = request.env["HTTP_REFERER"]
     pusher_channel = source.split('?').first.split('://').last.gsub('/','_')
@@ -38,8 +39,8 @@ class FirecssController < ApplicationController
     edits.each_with_index do |edit, i|
       if (edit.to_i == -1)
         mods = []
-        puts "reset"
-      else
+        code = "window.location.reload();"
+       else
         mods << {:selector => params[:selectors][i], :property => params[:properties][i], :value => params[:values][i], :source => params[:sources][i], :line => params[:lines][i].to_f, :timestamp  => params[:timestamps][i].to_i, :edit  => number_mods + i, :client => @client}
         puts "#{params[:selectors][i]} {#{params[:properties][i]}: #{params[:values][i]}}"
       end
@@ -47,7 +48,7 @@ class FirecssController < ApplicationController
     Pusher[pusher_channel].trigger('FireCSS', mods)
     Rails.cache.write(pusher_channel, mods)
     puts y mods
-    render :text => '' #nothing needs to be returned
+    render :text => code #nothing needs to be returned
   end
 
   def polling
@@ -75,8 +76,44 @@ class FirecssController < ApplicationController
       render_json(updates.to_json)
     end
   end
+  
+  def downloadshow
+     source = request.env["HTTP_REFERER"]
+     sheets = params[:stylesheets]
+     rules = params[:rules]
+     # note firebug may insert its own rulesheet so we need to remove if its there.
+     result = ''
+     sheets.each_with_index do |sheet, i|
+       result += sheet + "\n" + rules[i]
+     end
+     render :text => result.gsub("\n","<br/>") +  '<br/><br/><pre>' + ERB::Util::html_escape(params[:html]) + '</pre>'
+  end
+  
+   def download
+    source = request.env["HTTP_REFERER"]
+    name_and_suffix = source.split('?').first.split('/').last.split('.')
+    filename = name_and_suffix[0..(name_and_suffix.length - 2)].join('.')
+    sheets = params[:stylesheets]
+    rules = params[:rules]
+    html = params[:html]
+    if (sheets.length > 0)
+      data = StringIO.new
+      Zip::ZipOutputStream.use('zip.css', data) do |z|
+        sheets.each_with_index do |sheet, i|
+          z.put_next_entry(sheet.split('?').first.split('/').last)
+          z.print rules[i]
+        end
+         z.put_next_entry(name_and_suffix.join('.'))
+         z.print html
+      end
+      send_data data.string, :filename => "#{filename}.zip", :type => 'application/zip', :disposition => 'attachment'
+    else
+      send_data html, :filename => "#{filename}.html", :type => 'text/html', :disposition => 'attachment'
+    end
+  end
 
-  def download
+
+  def downloadX
     source = params[:referer]
     pusher_channel = source.split('?').first.split('://').last.gsub('/','_')
     mods = Rails.cache.read(pusher_channel) || [];
