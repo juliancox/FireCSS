@@ -111,3 +111,9 @@ It would be nice to add some formatting options so that the format of the update
 You can edit the same page in two different versions of Firefox with the Firebug and FireCSS plugins.  
 Other browsers should reflect all changes but in this version each copy of Firefox will not be updated with the changes from the the other copy.
 (The earlier version I used for the video on FireCSS.com did update from multiple sources).
+
+
+Comments/Questions
+------------------
+
+Drop me a comment at [firecss.com](http://firecss.com)
