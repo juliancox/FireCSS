@@ -325,8 +325,19 @@ FBL.ns(function() {
                 var html = content.document.createElement("input");
                 html.setAttribute("type", 'hidden');
                 html.setAttribute("name", 'html');
-                var docContent = '<!DOCTYPE ' + content.document.doctype.name + ' PUBLIC "'+ content.document.doctype.publicId + '" "' + content.document.doctype.systemId + '">\n'
-                docContent += '<html'
+                // test if document has doctype before use it
+                if (content.document.doctype) {
+                    var docContent = '<!DOCTYPE ' + content.document.doctype.name;
+                    if (content.document.doctype.publicId != '') { // If html5 doctype, content.document.doctype.publicId will be empty
+                        docContent += ' PUBLIC "'+ content.document.doctype.publicId + '" "' + content.document.doctype.systemId + '"';
+                    }
+                    docContent += '>\n';
+                } else {
+                    // no doctype, very dirty code : set a default doctype
+                    // as you are a dirty girl or guy, the default doctype will be HTML 5 !
+                    var docContent = '<!DOCTYPE html>\n';
+                }
+                docContent += '<html';
                 for (var i=0; i < content.document.documentElement.attributes.length; i++) {
                     var attr = content.document.documentElement.attributes[i];
                     docContent+= ' ' + attr.name + '="' + attr.value + '"';
